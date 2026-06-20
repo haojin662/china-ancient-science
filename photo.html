@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片查看 - 中国古代数理科技</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .photo-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .photo-card {
+      background: rgba(18, 18, 40, 0.95);
+      border-radius: 20px;
+      border: 1px solid rgba(233, 69, 96, 0.2);
+      padding: 2rem;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+      flex: 1;
+    }
+
+    .photo-title-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(233, 69, 96, 0.15);
+    }
+
+    .photo-title-section h2 {
+      color: #f0f0f0;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .photo-title-section .photo-year {
+      color: #e94560;
+      font-size: 0.9rem;
+    }
+
+    .photo-image-wrapper {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(233, 69, 96, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .photo-image-wrapper img {
+      max-width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .photo-image-wrapper .image-error {
+      padding: 4rem 2rem;
+      color: #8080a0;
+      text-align: center;
+    }
+
+    .photo-caption {
+      background: rgba(233, 69, 96, 0.05);
+      border-left: 4px solid #e94560;
+      padding: 1.2rem 1.5rem;
+      border-radius: 0 10px 10px 0;
+      margin-top: 1rem;
+    }
+
+    .photo-caption .caption-label {
+      color: #e94560;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: block;
+      margin-bottom: 0.4rem;
+      letter-spacing: 1px;
+    }
+
+    .photo-caption .caption-text {
+      color: #c0c0d0;
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+
+    .photo-caption .no-caption {
+      color: #8080a0;
+      font-style: italic;
+    }
+
+    .photo-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .photo-nav .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.8rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid rgba(233, 69, 96, 0.3);
+      background: transparent;
+      color: #e0e0e0;
+      text-decoration: none;
+    }
+
+    .photo-nav .btn:hover {
+      border-color: #e94560;
+      background: rgba(233, 69, 96, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .photo-nav .btn-primary {
+      background: #e94560;
+      border-color: #e94560;
+      color: white;
+    }
+
+    .photo-nav .btn-primary:hover {
+      background: #d63850;
+      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.3);
+    }
+
+    .photo-nav .nav-arrows {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .photo-nav .nav-arrows .btn {
+      padding: 0.7rem 1.2rem;
+      font-size: 1.2rem;
+    }
+
+    .loading-photo {
+      text-align: center;
+      padding: 4rem;
+      color: #8080a0;
+    }
+
+    .error-photo {
+      text-align: center;
+      padding: 4rem;
+      color: #e94560;
+    }
+
+    .error-photo a {
+      color: #e94560;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .photo-card {
+        padding: 1.2rem;
+      }
+
+      .photo-title-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+      }
+
+      .photo-title-section h2 {
+        font-size: 1.2rem;
+      }
+
+      .photo-nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .photo-nav .nav-arrows {
+        order: -1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header" style="padding:1rem 1rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="javascript:history.back()" style="color:#e94560;font-size:1.2rem;text-decoration:none;">← 返回详情</a>
+      <span style="color:#9090b0;font-size:0.85rem;">🖼️ 图片查看</span>
+      <a href="index.html" style="color:#8080a0;font-size:0.85rem;text-decoration:none;">时间线</a>
+    </div>
+  </header>
+
+  <div class="photo-container" id="photoContainer">
+    <div class="loading-photo">🖼️ 加载中...</div>
+  </div>
+
+  <script>
+    async function loadPhoto() {
+      const container = document.getElementById('photoContainer');
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!id) {
+        container.innerHTML = `
+                    <div class="error-photo">
+                        ❌ 未指定图片条目<br>
+                        <a href="index.html">返回时间线</a>
+                    </div>
+                `;
+        return;
+      }
+
+      try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('无法加载数据');
+
+        const data = await response.json();
+        const item = data.find(d => d.id === parseInt(id));
+
+        if (!item) {
+          container.innerHTML = `
+                        <div class="error-photo">
+                            ❌ 未找到 ID 为 ${id} 的条目<br>
+                            <a href="index.html">返回时间线</a>
+                        </div>
+                    `;
+          return;
+        }
+
+        // ★★★ 判断：image 为空则提示无图 ★★★
+        if (!item.image || item.image.trim() === '') {
+          container.innerHTML = `
+                        <div class="error-photo">
+                            ❌ 该条目没有配图<br>
+                            <a href="detail.html?id=${id}">返回详情页</a>
+                        </div>
+                    `;
+          return;
+        }
+
+        // 找有图片的上下条（用于翻页）
+        const withImages = data.filter(d => d.image && d.image.trim() !== '');
+        const currentImgIndex = withImages.findIndex(d => d.id === item.id);
+        const prevImg = currentImgIndex > 0 ? withImages[currentImgIndex - 1] : null;
+        const nextImg = currentImgIndex < withImages.length - 1 ? withImages[currentImgIndex + 1] : null;
+
+        container.innerHTML = `
+                    <div class="photo-card">
+                        <div class="photo-title-section">
+                            <h2>${item.title}</h2>
+                            <span class="photo-year">${item.year}</span>
+                        </div>
+
+                        <div class="photo-image-wrapper">
+                            <img src="${item.image}" alt="${item.title}"
+                                 onerror="this.outerHTML='<div class=\\'image-error\\'>🖼️ 图片加载失败<br><small>路径: ${item.image}</small></div>'">
+                        </div>
+
+                        <div class="photo-caption">
+                            <span class="caption-label">📝 图片注释</span>
+                            ${item.imageCaption && item.imageCaption.trim() !== ''
+            ? `<p class="caption-text">${item.imageCaption}</p>`
+            : `<p class="no-caption">（暂未添加注释，可在 data.json 的 imageCaption 字段中补充）</p>`
+          }
+                        </div>
+
+                        <div class="photo-nav">
+                            <a href="detail.html?id=${item.id}" class="btn btn-primary">← 返回详情</a>
+                            <div class="nav-arrows">
+                                ${prevImg ? `<a href="photo.html?id=${prevImg.id}" class="btn">← 上一图</a>` : ''}
+                                ${nextImg ? `<a href="photo.html?id=${nextImg.id}" class="btn">下一图 →</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+        document.title = `${item.title} - 图片查看`;
+
+      } catch (error) {
+        container.innerHTML = `
+                    <div class="error-photo">
+                        ❌ 加载失败：${error.message}<br>
+                        <a href="index.html">返回时间线</a>
+                    </div>
+                `;
+      }
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') {
+        const prevBtn = document.querySelector('.nav-arrows .btn:first-child');
+        if (prevBtn && prevBtn.getAttribute('href') !== '#') {
+          window.location.href = prevBtn.getAttribute('href');
+        }
+      } else if (e.key === 'ArrowRight') {
+        const nextBtn = document.querySelector('.nav-arrows .btn:last-child');
+        if (nextBtn && nextBtn.getAttribute('href') !== '#') {
+          window.location.href = nextBtn.getAttribute('href');
+        }
+      }
+    });
+
+    loadPhoto();
+  </script>
+
+</body>
+
+</html>

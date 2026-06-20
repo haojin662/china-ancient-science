@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国古代数理科技时间线</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- 头部 -->
+  <header class="header">
+    <h1><span class="icon">🔬</span> 中国古代数理科技时间线</h1>
+    <p>数 · 天 · 物 · 算 · 奇</p>
+    <div class="subtitle">从上古到明清 · 系统梳理数学 · 天文 · 物理 · 冷门算法的杰出成就</div>
+  </header>
+
+  <!-- 分类过滤 -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all">🏛️ 全部 <span class="count" id="countAll"></span></button>
+    <button class="filter-btn" data-filter="math">📐 数学算法 <span class="count" id="countMath"></span></button>
+    <button class="filter-btn" data-filter="astro">🌌 天文历法 <span class="count" id="countAstro"></span></button>
+    <button class="filter-btn" data-filter="physics">⚙️ 物理机械 <span class="count" id="countPhysics"></span></button>
+    <button class="filter-btn" data-filter="rare">💎 冷门奇技 <span class="count" id="countRare"></span></button>
+  </div>
+
+  <!-- 时间线 -->
+  <div class="timeline" id="timeline">
+    <div class="loading">数据加载中</div>
+  </div>
+
+  <!-- 统计 -->
+  <div class="stats">
+    共收录 <span id="totalCount">0</span> 项古代科技成就，当前展示 <span id="visibleCount">0</span> 项
+  </div>
+
+  <!-- 年代跳转 -->
+  <div class="year-jump">
+    <label>📅 年代跳转</label>
+    <select id="yearSelect" onchange="jumpToYear(this.value)">
+      <option value="">选择年代</option>
+    </select>
+  </div>
+
+  <!-- 回到顶部 -->
+  <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+    // ===== 全局变量 =====
+    let allData = [];
+    let currentFilter = 'all';
+
+    // ===== 加载数据 =====
+    async function loadData() {
+      try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('无法加载数据文件');
+        allData = await response.json();
+        updateCategoryCounts();
+
+        // 恢复之前选中的分类
+        const savedFilter = sessionStorage.getItem('timelineFilter');
+        if (savedFilter && savedFilter !== 'all') {
+          currentFilter = savedFilter;
+          document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.filter === savedFilter);
+          });
+          sessionStorage.removeItem('timelineFilter');
+        }
+
+        renderTimeline(currentFilter);
+
+        // ★★★ 平滑恢复滚动位置（无闪烁） ★★★
+        const savedScrollY = sessionStorage.getItem('timelineScrollY');
+        if (savedScrollY) {
+          const targetY = parseInt(savedScrollY);
+          sessionStorage.removeItem('timelineScrollY');
+
+          // 先隐藏滚动条 + 立即定位（完全避免顶部闪烁）
+          document.body.style.overflow = 'hidden';
+          window.scrollTo(0, targetY);
+
+          // 等两帧渲染完成后放开滚动条
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.scrollTo(0, targetY);
+              document.body.style.overflow = '';
+            });
+          });
+        }
+
+      } catch (error) {
+        document.getElementById('timeline').innerHTML = `
+                    <div style="text-align:center;padding:3rem;color:#e94560;">
+                        ❌ 数据加载失败：${error.message}<br>
+                        <small>请确保 data.json 文件在相同目录下</small>
+                    </div>
+                `;
+      }
+    }
+
+    // ===== 更新分类计数 =====
+    function updateCategoryCounts() {
+      document.getElementById('countAll').textContent = allData.length;
+      document.getElementById('countMath').textContent = allData.filter(d => d.category === 'math').length;
+      document.getElementById('countAstro').textContent = allData.filter(d => d.category === 'astro').length;
+      document.getElementById('countPhysics').textContent = allData.filter(d => d.category === 'physics').length;
+      document.getElementById('countRare').textContent = allData.filter(d => d.category === 'rare').length;
+    }
+
+    // ===== 渲染时间线 =====
+    function renderTimeline(filter) {
+      const container = document.getElementById('timeline');
+      container.innerHTML = '';
+
+      const filteredData = filter === 'all' ? allData : allData.filter(d => d.category === filter);
+
+      if (filteredData.length === 0) {
+        container.innerHTML = `
+                    <div style="text-align:center;padding:3rem;color:#8080a0;">
+                        🕯️ 该分类暂无数据，请尝试其他分类
+                    </div>
+                `;
+        updateStats(filter);
+        updateYearSelect(filter);
+        return;
+      }
+
+      // 按年份排序
+      filteredData.sort((a, b) => a.yearNum - b.yearNum);
+
+      filteredData.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `timeline-item ${index % 2 === 0 ? 'left' : 'right'} visible`;
+        div.dataset.category = item.category;
+        div.dataset.year = item.yearNum;
+        div.dataset.id = item.id;
+
+        const categoryNames = {
+          'math': '数学算法',
+          'astro': '天文历法',
+          'physics': '物理机械',
+          'rare': '冷门奇技'
+        };
+
+        const categoryClasses = {
+          'math': 'category-math',
+          'astro': 'category-astro',
+          'physics': 'category-physics',
+          'rare': 'category-rare'
+        };
+
+        div.innerHTML = `
+                    <div class="content" onclick="goToDetail(${item.id})">
+                        <span class="year-tag">${item.year}</span>
+                        <span class="category-tag ${categoryClasses[item.category]}">${categoryNames[item.category]}</span>
+                        <h3>${item.title}</h3>
+                        <div class="person">👤 ${item.person}</div>
+                        <div class="brief">${item.brief}</div>
+                        <div class="read-more">查看完整讲解 →</div>
+                    </div>
+                `;
+
+        container.appendChild(div);
+      });
+
+      updateStats(filter);
+      updateYearSelect(filter);
+    }
+
+    // ===== 跳转到详情页（保存滚动位置和分类） =====
+    function goToDetail(id) {
+      // 保存当前滚动位置和分类到浏览器会话存储
+      sessionStorage.setItem('timelineScrollY', window.scrollY);
+      sessionStorage.setItem('timelineFilter', currentFilter);
+      window.location.href = `detail.html?id=${id}`;
+    }
+
+    // ===== 更新统计 =====
+    function updateStats(filter) {
+      const total = allData.length;
+      const visible = filter === 'all' ? allData.length : allData.filter(d => d.category === filter).length;
+      document.getElementById('totalCount').textContent = total;
+      document.getElementById('visibleCount').textContent = visible;
+    }
+
+    // ===== 更新年代选择器 =====
+    function updateYearSelect(filter) {
+      const select = document.getElementById('yearSelect');
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">📅 选择年代</option>';
+
+      const filteredData = filter === 'all' ? allData : allData.filter(d => d.category === filter);
+
+      // 去重并按年代排序
+      const yearMap = new Map();
+      filteredData.forEach(d => {
+        if (!yearMap.has(d.year)) {
+          yearMap.set(d.year, d.yearNum);
+        }
+      });
+
+      const sortedYears = [...yearMap.entries()].sort((a, b) => a[1] - b[1]);
+
+      sortedYears.forEach(([year]) => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        select.appendChild(option);
+      });
+
+      if (currentValue) {
+        select.value = currentValue;
+      }
+    }
+
+    // ===== 年代跳转 =====
+    function jumpToYear(year) {
+      if (!year) return;
+
+      const items = document.querySelectorAll('.timeline-item');
+      for (const item of items) {
+        const yearTag = item.querySelector('.year-tag');
+        if (yearTag && yearTag.textContent === year) {
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // 高亮闪烁效果
+          const content = item.querySelector('.content');
+          content.style.borderColor = '#e94560';
+          content.style.boxShadow = '0 0 30px rgba(233,69,96,0.5)';
+          setTimeout(() => {
+            content.style.borderColor = 'rgba(30,50,100,0.4)';
+            content.style.boxShadow = '0 8px 30px rgba(0,0,0,0.4)';
+          }, 2000);
+          break;
+        }
+      }
+    }
+
+    // ===== 分类过滤 =====
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.filter;
+        renderTimeline(currentFilter);
+      });
+    });
+
+    // ===== 回到顶部按钮 =====
+    window.addEventListener('scroll', function () {
+      const btn = document.getElementById('backTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('show');
+      } else {
+        btn.classList.remove('show');
+      }
+    });
+
+    // ===== 启动 =====
+    loadData();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科技详情 - 中国古代数理科技</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .detail-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    .detail-card {
+      background: rgba(18, 18, 40, 0.95);
+      border-radius: 20px;
+      border: 1px solid rgba(233, 69, 96, 0.2);
+      padding: 2.5rem;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    .detail-header {
+      border-bottom: 2px solid rgba(233, 69, 96, 0.15);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .detail-header .year-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #e94560, #c0392b);
+      color: white;
+      padding: 0.3rem 1.2rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .detail-header .category-badge {
+      display: inline-block;
+      padding: 0.3rem 1.2rem;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    .category-math {
+      background: #00b894;
+      color: #0d0d1a;
+    }
+
+    .category-astro {
+      background: #6c5ce7;
+      color: white;
+    }
+
+    .category-physics {
+      background: #fdcb6e;
+      color: #0d0d1a;
+    }
+
+    .category-rare {
+      background: #e17055;
+      color: white;
+    }
+
+    .detail-header h1 {
+      font-size: 2.4rem;
+      color: #f0f0f0;
+      margin: 0.8rem 0 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .detail-header .person-info {
+      font-size: 1.1rem;
+      color: #6c5ce7;
+      margin-top: 0.5rem;
+    }
+
+    .detail-header .person-info span {
+      color: #8080a8;
+    }
+
+    .detail-section {
+      margin-bottom: 2rem;
+    }
+
+    .detail-section h2 {
+      color: #e94560;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(233, 69, 96, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detail-section p {
+      color: #c0c0d0;
+      line-height: 1.9;
+      font-size: 1.05rem;
+      text-indent: 2em;
+    }
+
+    .detail-section .highlight-box {
+      background: rgba(233, 69, 96, 0.05);
+      border-left: 4px solid #e94560;
+      padding: 1.2rem 1.5rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1rem 0;
+    }
+
+    .detail-section .highlight-box p {
+      text-indent: 0;
+    }
+
+    .detail-section .highlight-box .label {
+      color: #e94560;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    /* ===== 图片展示区 ===== */
+    .detail-image-section {
+      margin: 1.5rem 0;
+    }
+
+    .detail-image-card {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(233, 69, 96, 0.15);
+      background: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.35s ease;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .detail-image-card:hover {
+      border-color: #e94560;
+      box-shadow: 0 8px 30px rgba(233, 69, 96, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .detail-image-card img {
+      width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+      display: block;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .detail-image-card .image-caption {
+      padding: 0.8rem 1.2rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-top: 1px solid rgba(233, 69, 96, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-image-card .image-caption .caption-text {
+      color: #b0b0c0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .detail-image-card .image-caption .view-hint {
+      color: #e94560;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      margin-left: 1rem;
+      opacity: 0.7;
+    }
+
+    .detail-image-card:hover .image-caption .view-hint {
+      opacity: 1;
+    }
+
+    .detail-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-nav .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.8rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid rgba(233, 69, 96, 0.3);
+      background: transparent;
+      color: #e0e0e0;
+      text-decoration: none;
+    }
+
+    .detail-nav .btn:hover {
+      border-color: #e94560;
+      background: rgba(233, 69, 96, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .detail-nav .btn-primary {
+      background: #e94560;
+      border-color: #e94560;
+      color: white;
+    }
+
+    .detail-nav .btn-primary:hover {
+      background: #d63850;
+      box-shadow: 0 5px 20px rgba(233, 69, 96, 0.3);
+    }
+
+    .detail-nav .nav-arrows {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .detail-nav .nav-arrows .btn {
+      padding: 0.7rem 1.2rem;
+      font-size: 1.2rem;
+    }
+
+    .loading-detail {
+      text-align: center;
+      padding: 4rem;
+      color: #8080a0;
+    }
+
+    .error-detail {
+      text-align: center;
+      padding: 4rem;
+      color: #e94560;
+    }
+
+    .error-detail a {
+      color: #e94560;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .detail-card {
+        padding: 1.5rem;
+      }
+
+      .detail-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .detail-nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .detail-nav .nav-arrows {
+        order: -1;
+      }
+
+      .detail-image-card .image-caption {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+      }
+
+      .detail-image-card .image-caption .view-hint {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header" style="padding:1.2rem 1rem;">
+    <a href="index.html" style="color:#e94560;font-size:1.4rem;text-decoration:none;display:inline-block;">
+      ← 返回时间线
+    </a>
+    <div style="font-size:0.8rem;color:#606080;margin-top:0.3rem;">
+      中国古代数理科技 · 详细解读
+    </div>
+  </header>
+
+  <div class="detail-container" id="detailContainer">
+    <div class="loading-detail">📜 加载中...</div>
+  </div>
+
+  <script>
+    async function loadDetail() {
+      const container = document.getElementById('detailContainer');
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!id) {
+        container.innerHTML = `
+                    <div class="error-detail">
+                        ❌ 未指定要查看的条目<br>
+                        <a href="index.html">返回时间线选择</a>
+                    </div>
+                `;
+        return;
+      }
+
+      try {
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('无法加载数据');
+
+        const data = await response.json();
+        const item = data.find(d => d.id === parseInt(id));
+
+        if (!item) {
+          container.innerHTML = `
+                        <div class="error-detail">
+                            ❌ 未找到 ID 为 ${id} 的条目<br>
+                            <a href="index.html">返回时间线</a>
+                        </div>
+                    `;
+          return;
+        }
+
+        const sortedData = [...data].sort((a, b) => a.yearNum - b.yearNum);
+        const currentIndex = sortedData.findIndex(d => d.id === item.id);
+        const prev = currentIndex > 0 ? sortedData[currentIndex - 1] : null;
+        const next = currentIndex < sortedData.length - 1 ? sortedData[currentIndex + 1] : null;
+
+        const categoryNames = {
+          'math': '📐 数学算法',
+          'astro': '🌌 天文历法',
+          'physics': '⚙️ 物理机械',
+          'rare': '💎 冷门奇技'
+        };
+
+        const categoryClasses = {
+          'math': 'category-math',
+          'astro': 'category-astro',
+          'physics': 'category-physics',
+          'rare': 'category-rare'
+        };
+
+        // ★★★ 判断逻辑：image 有值（非空字符串）才显示图片区域 ★★★
+        const hasImage = item.image && item.image.trim() !== '';
+
+        const imageHtml = hasImage ? `
+                    <div class="detail-section">
+                        <h2>🖼️ 图像资料</h2>
+                        <a href="photo.html?id=${item.id}" class="detail-image-card">
+                            <img src="${item.image}" alt="${item.title}"
+                                 onerror="this.outerHTML='<div style=\\'padding:2rem;text-align:center;color:#8080a0;\\'>🖼️ 图片加载失败</div>'">
+                            <div class="image-caption">
+                                <span class="caption-text">${item.imageCaption || '点击查看大图'}</span>
+                                <span class="view-hint">查看大图 →</span>
+                            </div>
+                        </a>
+                    </div>
+                ` : '';
+
+        container.innerHTML = `
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <div>
+                                <span class="year-badge">${item.year}</span>
+                                <span class="category-badge ${categoryClasses[item.category]}">${categoryNames[item.category]}</span>
+                            </div>
+                            <h1>${item.title}</h1>
+                            <div class="person-info">👤 <span>人物：</span>${item.person}</div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h2>📋 概述</h2>
+                            <p>${item.brief}</p>
+                        </div>
+
+                        ${imageHtml}
+
+                        <div class="detail-section">
+                            <h2>🔧 技术原理</h2>
+                            <div class="highlight-box">
+                                <span class="label">核心算法 / 原理</span>
+                                <p>${item.principle}</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h2>📜 历史价值</h2>
+                            <div class="highlight-box" style="border-left-color:#6c5ce7;">
+                                <span class="label" style="color:#6c5ce7;">世界意义 / 学术地位</span>
+                                <p>${item.value}</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h2>🏷️ 分类信息</h2>
+                            <p style="text-indent:0;">
+                                <strong style="color:#e94560;">${categoryNames[item.category]}</strong>
+                                ${item.category === 'math' ? '· 展示中国古代数学的算法化思维与程序化解法' : ''}
+                                ${item.category === 'astro' ? '· 展示中国古代天文学的精确观测与数学模型' : ''}
+                                ${item.category === 'physics' ? '· 展示中国古代物理学的实验精神与机械智慧' : ''}
+                                ${item.category === 'rare' ? '· 展示被忽视的冷门算法与技术遗产' : ''}
+                            </p>
+                        </div>
+
+                        <div class="detail-nav">
+                            <a href="index.html" class="btn btn-primary">← 返回时间线</a>
+                            <div class="nav-arrows">
+                                ${prev ? `<a href="detail.html?id=${prev.id}" class="btn">← ${prev.title}</a>` : ''}
+                                ${next ? `<a href="detail.html?id=${next.id}" class="btn">${next.title} →</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+        document.title = `${item.title} - 中国古代数理科技`;
+
+      } catch (error) {
+        container.innerHTML = `
+                    <div class="error-detail">
+                        ❌ 加载失败：${error.message}<br>
+                        <a href="index.html">返回时间线</a>
+                    </div>
+                `;
+      }
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') {
+        const prevBtn = document.querySelector('.nav-arrows .btn:first-child');
+        if (prevBtn && prevBtn.getAttribute('href') !== '#') {
+          window.location.href = prevBtn.getAttribute('href');
+        }
+      } else if (e.key === 'ArrowRight') {
+        const nextBtn = document.querySelector('.nav-arrows .btn:last-child');
+        if (nextBtn && nextBtn.getAttribute('href') !== '#') {
+          window.location.href = nextBtn.getAttribute('href');
+        }
+      }
+    });
+
+    loadDetail();
+  </script>
+
+</body>
+
+</html>
